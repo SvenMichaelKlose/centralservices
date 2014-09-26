@@ -18,7 +18,7 @@
   (action-redirect :remove 'login :add 'logindone))
 
 (defun encrypt-password (x)
-  (areplace x (list (cons 'password (md5 (assoc-value 'password x))))))
+  (areplace x (list (. 'password (md5 (assoc-value 'password x))))))
 
 (defun process-login ()
   (!? (find-user (encrypt-password (form-data)))
@@ -31,7 +31,8 @@
     (form-complete?) (process-login)
     (has-form?)      (= *login-status* (lang de "Das Formular ist unvollst&auml;ndig."
                                              en "Sorry, but the form is incomplete.")))
-  (set-port (tpl-login))
+  (set-port
+    (tpl-login))
   1)
 
 (define-action login  :group login)

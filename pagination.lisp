@@ -1,4 +1,4 @@
-;;;;; centralservices – Copyright (c) 2012–2013 Sven Michael Klose <pixel@copei.de>
+;;;;; centralservices – Copyright (c) 2012–2014 Sven Michael Klose <pixel@copei.de>
 
 (defstruct pagination
   (size 10)
@@ -10,12 +10,10 @@
   (* size (-- page)))
 
 (def-pagination pagination-pages (pagination)
-  (with (d (/ total size)
-         n (integer d)
-         r (- total (* n size))) ; XXX MOD doesn't work!?
-    (? (< 0 r)
-       (++ n)
-       n)))
+  (+ (integer (/ total size))
+     (? (zero? (mod total size))
+        0
+        1)))
 
 (def-pagination pagination-from (pagination)
   (++ (pagination-offset pagination)))

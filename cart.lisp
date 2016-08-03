@@ -1,4 +1,4 @@
-;;;;; Copyright (c) 2012,2014 Sven Michael Klose <pixel@copei.de>
+; Copyright (c) 2012,2014–2015 Sven Michael Klose <pixel@copei.de>
 
 (defun cart-current ()      (!?   (session 'cart)      (phphash-alist !)))
 (defun cart-undos ()        (!?   (session 'cart-undo) (array-list !)))
@@ -23,7 +23,7 @@
   (not (zero? (length (cart-current)))))
 
 (defmacro filter-cart (&rest body)
-  `(= (cart-current) (filter [,@body] (cart-current))))
+  `(= (cart-current) (@ [,@body] (cart-current))))
 
 (defun cart-redirect ()
   (action-redirect :update 'cart))
@@ -61,7 +61,7 @@
       (+! total (number (assoc-value 'price (cart-find-article i.)))))))
 
 (defun cart-items ()
-  (template-list #'tpl-cart-item (filter [cart-find-article _.] (cart-current))))
+  (template-list #'tpl-cart-item (@ [cart-find-article _.] (cart-current))))
 
 (defun cart-num-items ()
   (length (cart-current)))
@@ -77,7 +77,7 @@
 (defun cart-update ()
   (when (has-form?)
     (cart-add-undo)
-    (filter #'cart-update-item (form-alists))
+    (@ #'cart-update-item (form-alists))
     (action-redirect)))
 
 (defun cart (x)

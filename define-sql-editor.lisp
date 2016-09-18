@@ -1,4 +1,4 @@
-;;;;; Copyright (c) 2012 Sven Michael Klose <pixel@copei.de>
+; Copyright (c) 2012,2016 Sven Michael Klose <pixel@copei.de>
 
 (defmacro define-sql-editor (&key name singular-name
                                   template item-template
@@ -28,7 +28,7 @@
          (set-port
            (,fn-inserter (+ ,item-presets
                             ,@(!? parent-reference-field
-                                  `((list (cons ',! (integer (cadr x))))))
+                                  `((list (. ',! (integer (cadr x))))))
                             (form-data)))
            (action-redirect :remove ',action-add))
          nil)
@@ -45,12 +45,12 @@
 
        (defun ,action (x)
          (set-port
-           (,tpl-list `((records . ,,`(template-list [,tpl-item (+ (list (cons 'link-item   (action-url :add (list ',action-item   (assoc-value 'id _))))
-                                                                         (cons 'link-edit   (action-url :add (list ',action-edit   (assoc-value 'id _))))
-                                                                         (cons 'link-remove (action-url :add (list ',action-remove (assoc-value 'id _)))))
+           (,tpl-list `((records . ,,`(template-list [,tpl-item (+ (list (. 'link-item   (action-url :add (list ',action-item   (assoc-value 'id _))))
+                                                                         (. 'link-edit   (action-url :add (list ',action-edit   (assoc-value 'id _))))
+                                                                         (. 'link-remove (action-url :add (list ',action-remove (assoc-value 'id _)))))
                                                                    _)]
                                                      (,fn-find ,@(!? parent-name
-                                                                     `((list (cons ',parent-reference-field (integer (| .x. 0)))))))))
+                                                                     `((list (. ',parent-reference-field (integer (| .x. 0)))))))))
                         (link-add . ,,`(action-url :add (list ',action-add ,@(& parent-reference-field
                                                                                 `((| (param 'id) 0)))))))))
          (values (list x. (| .x. 0)) ..x))

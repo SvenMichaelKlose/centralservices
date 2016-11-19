@@ -37,7 +37,7 @@
 
        (defun ,action-remove (x)
          (set-port
-           (,fn-delete `(id . ,.x.))
+           (,fn-delete (. 'id .x.))
            (action-redirect :remove ',action-remove))
          nil)
 
@@ -45,14 +45,14 @@
 
        (defun ,action (x)
          (set-port
-           (,tpl-list `((records . ,,`(template-list [,tpl-item (+ (list (. 'link-item   (action-url :add (list ',action-item   (assoc-value 'id _))))
-                                                                         (. 'link-edit   (action-url :add (list ',action-edit   (assoc-value 'id _))))
-                                                                         (. 'link-remove (action-url :add (list ',action-remove (assoc-value 'id _)))))
-                                                                   _)]
-                                                     (,fn-find ,@(!? parent-name
-                                                                     `((list (. ',parent-reference-field (integer (| .x. 0)))))))))
-                        (link-add . ,,`(action-url :add (list ',action-add ,@(& parent-reference-field
-                                                                                `((| (param 'id) 0)))))))))
+           (,tpl-list (list (. 'records (template-list [,tpl-item (+ (list (. 'link-item   (action-url :add (list ',action-item   (assoc-value 'id _))))
+                                                                           (. 'link-edit   (action-url :add (list ',action-edit   (assoc-value 'id _))))
+                                                                           (. 'link-remove (action-url :add (list ',action-remove (assoc-value 'id _)))))
+                                                                     _)]
+                                                       (,fn-find ,@(!? parent-name
+                                                                       `((list (. ',parent-reference-field (integer (| .x. 0)))))))))
+                            (. 'link-add (action-url :add (list ',action-add ,@(& parent-reference-field
+                                                                                  `((| (param 'id) 0)))))))))
          (values (list x. (| .x. 0)) ..x))
 
        (define-action ,action)))))

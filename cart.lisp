@@ -1,51 +1,49 @@
-; Copyright (c) 2012,2014–2015 Sven Michael Klose <pixel@copei.de>
+(fn cart-current ()      (!?   (session 'cart)      (properties-alist !)))
+(fn cart-undos ()        (!?   (session 'cart-undo) (array-list !)))
+(fn cart-redos ()        (!?   (session 'cart-redo) (array-list !)))
+(fn (= cart-current) (x) (=    (session 'cart)      (alist-properties x)))
+(fn (= cart-undos) (x)   (=    (session 'cart-undo) (list-properties x)))
+(fn (= cart-redos) (x)   (=    (session 'cart-redo) (list-properties x)))
+(fn cart-add-undo ()     (push (session 'cart)      (cart-undos)))
+(fn cart-add-redo ()     (push (session 'cart)      (cart-redos)))
+(fn cart-pop-undo ()     (=    (session 'cart)      (pop (cart-undos))))
+(fn cart-pop-redo ()     (=    (session 'cart)      (pop (cart-redos))))
 
-(defun cart-current ()      (!?   (session 'cart)      (phphash-alist !)))
-(defun cart-undos ()        (!?   (session 'cart-undo) (array-list !)))
-(defun cart-redos ()        (!?   (session 'cart-redo) (array-list !)))
-(defun (= cart-current) (x) (=    (session 'cart)      (alist-phphash x)))
-(defun (= cart-undos) (x)   (=    (session 'cart-undo) (list-phphash x)))
-(defun (= cart-redos) (x)   (=    (session 'cart-redo) (list-phphash x)))
-(defun cart-add-undo ()     (push (session 'cart)      (cart-undos)))
-(defun cart-add-redo ()     (push (session 'cart)      (cart-redos)))
-(defun cart-pop-undo ()     (=    (session 'cart)      (pop (cart-undos))))
-(defun cart-pop-redo ()     (=    (session 'cart)      (pop (cart-redos))))
+(fn cart-num-undos ()    (length (session 'cart-undo)))
+(fn cart-num-redos ()    (length (session 'cart-redo)))
+(fn cart-has-undo? ()    (not (zero? (cart-num-undos))))
+(fn cart-has-redo? ()    (not (zero? (cart-num-redos))))
 
-(defun cart-num-undos ()    (length (session 'cart-undo)))
-(defun cart-num-redos ()    (length (session 'cart-redo)))
-(defun cart-has-undo? ()    (not (zero? (cart-num-undos))))
-(defun cart-has-redo? ()    (not (zero? (cart-num-redos))))
-
-(defun cart-item (x)
+(fn cart-item (x)
   (assoc x (cart-current) :test #'string==))
 
-(defun has-cart? ()
+(fn has-cart? ()
   (not (zero? (length (cart-current)))))
 
 (defmacro filter-cart (&rest body)
   `(= (cart-current) (@ [,@body] (cart-current))))
 
-(defun cart-redirect ()
+(fn cart-redirect ()
   (action-redirect :update 'cart))
 
-(defun cart-undo (x)
+(fn cart-undo (x)
   (cart-add-redo)
   (cart-pop-undo)
   (cart-redirect)
   .x)
 
-(defun cart-redo (x)
+(fn cart-redo (x)
   (cart-add-undo)
   (cart-pop-redo)
   (cart-redirect)
   .x)
 
-(defun cart-remove (x)
+(fn cart-remove (x)
   (cart-add-undo)
   (= (cart-current) (aremove .x. (cart-current) :test #'string==))
   (cart-redirect))
 
-(defun cart-add (x)
+(fn cart-add (x)
   (cart-add-undo)
   (let id (number (request 'id))
     (!? (cart-item id)
@@ -55,32 +53,32 @@
         (acons! .x. 1 (cart-current))))
   (cart-redirect))
 
-(defun cart-price-total ()
+(fn cart-price-total ()
   (let total 0
     (dolist (i (cart-current) total)
       (+! total (number (assoc-value 'price (cart-find-article i.)))))))
 
-(defun cart-items ()
+(fn cart-items ()
   (template-list #'tpl-cart-item (@ [cart-find-article _.] (cart-current))))
 
-(defun cart-num-items ()
+(fn cart-num-items ()
   (length (cart-current)))
 
-(defun cart-item-count (id)
+(fn cart-item-count (id)
   (assoc-value id (cart-current) :test #'==))
 
-(defun cart-update-item (x)
+(fn cart-update-item (x)
   (filter-cart (? (string== _. (assoc-value 'id x :test #'string==))
                   (. _. (assoc-value 'n x :test #'string==))
                   _)))
 
-(defun cart-update ()
+(fn cart-update ()
   (when (has-form?)
     (cart-add-undo)
     (@ #'cart-update-item (form-alists))
     (action-redirect)))
 
-(defun cart (x)
+(fn cart (x)
   (set-port
 ;    (cart-update)
     (? (has-cart?)

@@ -1,32 +1,30 @@
-;;;;; centralservices – Copyright (c) 2012 Sven Michael Klose <pixel@copei.de>
+(var *login-status* nil)
 
-(defvar *login-status* nil)
+(fn user-id ()    (session 'id))
+(fn user-alias () (session 'alias))
+(fn logged-in? () (user-id))
 
-(defun user-id ()    (session 'id))
-(defun user-alias () (session 'alias))
-(defun logged-in? () (user-id))
-
-(defun logout (x)
+(fn logout (x)
   (session_destroy)
   (= (session 'id)    nil)
   (= (session 'alias) nil)
   (action-redirect :remove 'login :add 'logoutdone))
 
-(defun login-ok (user)
+(fn login-ok (user)
   (= (session 'id)    (assoc-value 'id user))
   (= (session 'alias) (assoc-value 'alias user))
   (action-redirect :remove 'login :add 'logindone))
 
-(defun encrypt-password (x)
+(fn encrypt-password (x)
   (areplace x (list (. 'password (md5 (assoc-value 'password x))))))
 
-(defun process-login ()
+(fn process-login ()
   (!? (find-user (encrypt-password (form-data)))
       (login-ok !)
       (= *login-status* (lang de "Dieser Benutzer ist uns nicht bekannt oder das Passwort stimmt nicht."
                               en "Sorry, but the username or password is incorrect."))))
 
-(defun login (x)
+(fn login (x)
   (?
     (form-complete?) (process-login)
     (has-form?)      (= *login-status* (lang de "Das Formular ist unvollst&auml;ndig."

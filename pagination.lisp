@@ -1,5 +1,3 @@
-;;;;; centralservices – Copyright (c) 2012–2014 Sven Michael Klose <pixel@copei.de>
-
 (defstruct pagination
   (size 10)
   (page nil)
@@ -30,7 +28,7 @@
 (def-pagination pagination-last-page? (pagination)
   (== (pagination-pages pagination) page))
 
-(defun page-span (cls component-maker page &key (edge? nil) (txt nil))
+(fn page-span (cls component-maker page &key (edge? nil) (txt nil))
   `(,@(? edge? '(span) '(a))
      :class ,(? edge?
                 (+ cls " .off")

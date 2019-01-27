@@ -1,5 +1,3 @@
-; Copyright (c) 2012,2016 Sven Michael Klose <pixel@copei.de>
-
 (defmacro define-sql-editor (&key name singular-name
                                   template item-template
                                   (item-presets nil)
@@ -24,7 +22,7 @@
        (define-template ,tpl-list :path ,template)
        (define-template ,tpl-item :path ,item-template)
 
-       (defun ,action-add (x)
+       (fn ,action-add (x)
          (set-port
            (,fn-inserter (+ ,item-presets
                             ,@(!? parent-reference-field
@@ -35,7 +33,7 @@
 
        (define-action ,action-add)
 
-       (defun ,action-remove (x)
+       (fn ,action-remove (x)
          (set-port
            (,fn-delete (. 'id .x.))
            (action-redirect :remove ',action-remove))
@@ -43,7 +41,7 @@
 
        (define-action ,action-remove)
 
-       (defun ,action (x)
+       (fn ,action (x)
          (set-port
            (,tpl-list (list (. 'records (template-list [,tpl-item (+ (list (. 'link-item   (action-url :add (list ',action-item   (assoc-value 'id _))))
                                                                            (. 'link-edit   (action-url :add (list ',action-edit   (assoc-value 'id _))))

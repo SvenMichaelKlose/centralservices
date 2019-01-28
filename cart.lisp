@@ -2,8 +2,8 @@
 (fn cart-undos ()        (!?   (session 'cart-undo) (array-list !)))
 (fn cart-redos ()        (!?   (session 'cart-redo) (array-list !)))
 (fn (= cart-current) (x) (=    (session 'cart)      (alist-properties x)))
-(fn (= cart-undos) (x)   (=    (session 'cart-undo) (list-properties x)))
-(fn (= cart-redos) (x)   (=    (session 'cart-redo) (list-properties x)))
+(fn (= cart-undos) (x)   (=    (session 'cart-undo) (list-phparray x))) ; TODO fix
+(fn (= cart-redos) (x)   (=    (session 'cart-redo) (list-phparray x))) ; TODO fix
 (fn cart-add-undo ()     (push (session 'cart)      (cart-undos)))
 (fn cart-add-redo ()     (push (session 'cart)      (cart-redos)))
 (fn cart-pop-undo ()     (=    (session 'cart)      (pop (cart-undos))))
@@ -15,7 +15,7 @@
 (fn cart-has-redo? ()    (not (zero? (cart-num-redos))))
 
 (fn cart-item (x)
-  (assoc x (cart-current) :test #'string==))
+  (assoc x (cart-current)))
 
 (fn has-cart? ()
   (not (zero? (length (cart-current)))))
@@ -40,17 +40,17 @@
 
 (fn cart-remove (x)
   (cart-add-undo)
-  (= (cart-current) (aremove .x. (cart-current) :test #'string==))
+  (= (cart-current) (aremove .x. (cart-current)))
   (cart-redirect))
 
 (fn cart-add (x)
   (cart-add-undo)
-  (let id (number (request 'id))
+  (let id (number .x.)
     (!? (cart-item id)
         (filter-cart (? (== _. id)
                         (. _. (++ ._))
                         _))
-        (acons! .x. 1 (cart-current))))
+        (acons! id 1 (cart-current))))
   (cart-redirect))
 
 (fn cart-price-total ()
@@ -65,11 +65,11 @@
   (length (cart-current)))
 
 (fn cart-item-count (id)
-  (assoc-value id (cart-current) :test #'==))
+  (assoc-value id (cart-current)))
 
 (fn cart-update-item (x)
-  (filter-cart (? (string== _. (assoc-value 'id x :test #'string==))
-                  (. _. (assoc-value 'n x :test #'string==))
+  (filter-cart (? (eql _. (assoc-value 'id))
+                  (. _. (assoc-value 'n x))
                   _)))
 
 (fn cart-update ()

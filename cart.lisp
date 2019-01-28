@@ -2,8 +2,8 @@
 (fn cart-undos ()        (!?   (session 'cart-undo) (array-list !)))
 (fn cart-redos ()        (!?   (session 'cart-redo) (array-list !)))
 (fn (= cart-current) (x) (=    (session 'cart)      (alist-properties x)))
-(fn (= cart-undos) (x)   (=    (session 'cart-undo) (list-phparray x))) ; TODO fix
-(fn (= cart-redos) (x)   (=    (session 'cart-redo) (list-phparray x))) ; TODO fix
+(fn (= cart-undos) (x)   (=    (session 'cart-undo) (list-phparray x)))
+(fn (= cart-redos) (x)   (=    (session 'cart-redo) (list-phparray x)))
 (fn cart-add-undo ()     (push (session 'cart)      (cart-undos)))
 (fn cart-add-redo ()     (push (session 'cart)      (cart-redos)))
 (fn cart-pop-undo ()     (=    (session 'cart)      (pop (cart-undos))))
@@ -68,7 +68,7 @@
   (assoc-value id (cart-current)))
 
 (fn cart-update-item (x)
-  (filter-cart (? (eql _. (assoc-value 'id))
+  (filter-cart (? (eql _. (assoc-value 'id x))
                   (. _. (assoc-value 'n x))
                   _)))
 

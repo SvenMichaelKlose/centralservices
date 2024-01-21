@@ -9,7 +9,7 @@
 
 (def-pagination pagination-pages (pagination)
   (+ (integer (/ total size))
-     (? (zero? (mod total size))
+     (? (== 0 (mod total size))
         0
         1)))
 

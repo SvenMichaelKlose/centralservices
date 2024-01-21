@@ -11,14 +11,14 @@
 
 (fn cart-num-undos ()    (length (session 'cart-undo)))
 (fn cart-num-redos ()    (length (session 'cart-redo)))
-(fn cart-has-undo? ()    (not (zero? (cart-num-undos))))
-(fn cart-has-redo? ()    (not (zero? (cart-num-redos))))
+(fn cart-has-undo? ()    (not (== 0 (cart-num-undos))))
+(fn cart-has-redo? ()    (not (== 0 (cart-num-redos))))
 
 (fn cart-item (x)
   (assoc x (cart-current)))
 
 (fn has-cart? ()
-  (not (zero? (length (cart-current)))))
+  (not (== 0 (length (cart-current)))))
 
 (defmacro filter-cart (&rest body)
   `(= (cart-current) (@ [,@body] (cart-current))))
